@@ -20,3 +20,5 @@ propio, como un git.
 4. **Aplicar los cambios**
 
 Ejecutar el plan y realizar los cambios en la infraestructura.
+
++ **Estando en la VPN no funciona el `terraform init`**

@@ -1,7 +1,4 @@
-
-
 // PLUGIN para conectarse por SSH y mandar un comando
-
 
 package main
 
@@ -9,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -80,10 +78,12 @@ func resourceCiscoSSH() *schema.Resource {
 		DeleteContext: schema.NoopContext,
 
 		Schema: map[string]*schema.Schema{
-			"command": {
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "The command to execute on the Cisco IOS device",
+			"commands": {
+				Type:     schema.TypeList,
+				Required: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 			"result": {
 				Type:        schema.TypeString,
@@ -107,7 +107,7 @@ func resourceCiscoSSHUpdate(ctx context.Context, d *schema.ResourceData, m inter
     username := config.Username
     password := config.Password
     port := config.Port
-    command := d.Get("command").(string)
+    commands := d.Get("commands").([]interface{})
 
 	extraKexs := []string{
 		"diffie-hellman-group14-sha1",
@@ -140,20 +140,22 @@ func resourceCiscoSSHUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	}
 	defer driver.Close()
 
-	resp, err := driver.SendCommand(command)
+	var resultBuilder strings.Builder
+	for _, cmd := range commands {
+		command := cmd.(string)
+		resp, err := driver.SendCommand(command)
+		if err != nil {
+			return diag.FromErr(fmt.Errorf("error sending command: %w", err))
+		}
+
+		resultBuilder.WriteString(fmt.Sprintf("Command: %s\n", command))
+		resultBuilder.WriteString(fmt.Sprintf("Response:\n%s\n", resp.Result))
+	}
 	if err != nil {
 		return diag.FromErr(fmt.Errorf("error sending command: %w", err))
 	}
-
-	if resp.Failed != nil {
-		return diag.FromErr(fmt.Errorf("command execution failed: %s", resp.Result))
-	}
-
-	d.SetId(time.Now().UTC().String())
-
-	if err := d.Set("result", resp.Result); err != nil {
-		diags = append(diags, diag.FromErr(err)...)
-	}
+	d.SetId(fmt.Sprintf("%s:%s", host, username))
+	d.Set("result", resultBuilder.String())
 
 	return diags
 }

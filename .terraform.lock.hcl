@@ -5,6 +5,6 @@ provider "terraform.local/local/ciscoios" {
   version     = "1.0.0"
   constraints = "1.0.0"
   hashes = [
-    "h1:VddRh24M+ybcv7GPDVu/jhYzhP5u2RUi1Ux5VFs9noU=",
+    "h1:34qElA37ctF5Tw++Lxwrx1c1K/MyzlTV0pmbIPIq3Eo=",
   ]
 }

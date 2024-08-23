@@ -7,7 +7,7 @@ terraform {
   }
 }
 
-// VS tira error unexpected attribute pero esta bien esto
+// VS tira error unexpected attribute pero esta funciona bien
 provider "ciscoios" {
   host     = "100.100.1.141"
   username = "natroy2"
@@ -16,7 +16,13 @@ provider "ciscoios" {
 }
 
 resource "ciscoios_ssh_command" "example" {
-  command = "show conf"
+  commands = [
+    "enable",
+    "conf t",
+    "hostname TERRAFORM",
+    "exit",
+    "wr"
+  ]
 }
 
 output "command_result" {

@@ -7,6 +7,7 @@ terraform {
   }
 }
 
+// VS tira error unexpected attribute pero esta bien esto
 provider "ciscoios" {
   host     = "100.100.1.141"
   username = "natroy2"

@@ -19,7 +19,7 @@ resource "ciscoios_ssh_command" "example" {
   commands = [
     "enable",
     "conf t",
-    "hostname TERRAFORM",
+    "hostname Router1941",
     "exit",
     "wr"
   ]

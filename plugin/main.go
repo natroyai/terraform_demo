@@ -1,4 +1,4 @@
-// PLUGIN para conectarse por SSH y mandar un comando
+// PLUGIN para conectarse por SSH y mandar comandos
 
 package main
 
